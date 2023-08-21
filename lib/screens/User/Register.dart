@@ -1,31 +1,32 @@
 import 'dart:convert';
 
 import 'package:book/controller/user_controller.dart';
-import 'package:book/screens/ItBook.dart';
-import 'package:book/screens/User/register.dart';
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
 import 'package:http/http.dart' as http;
 
 import '../../global/global.dart';
-import '../../main.dart';
+import 'Login.dart';
 // import 'package:http/http.dart' as http;
 
-class Login extends StatefulWidget {
+class Register extends StatefulWidget {
   @override
-  _LoginState createState() => _LoginState();
+  _RegisterState createState() => _RegisterState();
 }
 
-class _LoginState extends State<Login> {
+class _RegisterState extends State<Register> {
+  final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
-  void _loginUser() async {
+  void _registerUser() async {
+    final String name = nameController.text;
     final String email = emailController.text;
     final String password = passwordController.text;
 
     // Create a map with the user credentials
     Map<String, String> credentials = {
+      'name': name,
       'email': email,
       'password': password,
     };
@@ -40,24 +41,24 @@ class _LoginState extends State<Login> {
 
     // Send the POST request
     final response = await http.post(
-      Uri.parse('${Global.baseUrl}/account/login/'),
+      Uri.parse('${Global.baseUrl}/account/register/'),
       headers: headers,
       body: jsonData,
     );
     print(response.statusCode);
     // Check the response
     if (response.statusCode == 200) {
-      // Login successful
+      // Register successful
       String decodedResponse = utf8.decode(response.bodyBytes);
-      print('Login successful! Response: ${decodedResponse}');
+      print('Register successful! Response: ${decodedResponse}');
       await AuthService.login(decodedResponse);
-      Get.offAll(() => ItBook());
+      Get.offAll(() => Login());
       // You can add navigation logic here to redirect to another page after successful login
     } else {
       // Login failed
       String decodedResponse = utf8.decode(response.bodyBytes);
-      print('Login failed. Error: $decodedResponse');
-      print('Login failed. Error: ${response.reasonPhrase}');
+      print('Register failed. Error: $decodedResponse');
+      print('Register failed. Error: ${response.reasonPhrase}');
     }
   }
 
@@ -65,7 +66,7 @@ class _LoginState extends State<Login> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Login Page'),
+        title: Text('Register Page'),
         automaticallyImplyLeading: false,
       ),
       body: Padding(
@@ -73,15 +74,9 @@ class _LoginState extends State<Login> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Row(
-              children: [
-                Text("Don't have an account?"),
-                TextButton(
-                    onPressed: () {
-                      Get.to(() => Register());
-                    },
-                    child: Text('Register'))
-              ],
+            TextField(
+              controller: nameController,
+              decoration: InputDecoration(labelText: 'Name'),
             ),
             TextField(
               controller: emailController,
@@ -94,8 +89,8 @@ class _LoginState extends State<Login> {
             ),
             SizedBox(height: 20),
             ElevatedButton(
-              onPressed: _loginUser,
-              child: Text('Login'),
+              onPressed: _registerUser,
+              child: Text('Register'),
             ),
           ],
         ),

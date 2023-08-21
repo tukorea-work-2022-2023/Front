@@ -1,18 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
-import '../Study/StudyPage.dart';
-
-class BoardDetail extends StatefulWidget {
+class MajorDetail extends StatefulWidget {
   final dynamic book; // Book details passed from HomePage
 
-  BoardDetail({required this.book});
+  MajorDetail({required this.book});
 
   @override
-  State<BoardDetail> createState() => _BoardDetailState();
+  State<MajorDetail> createState() => _MajorDetailState();
 }
 
-class _BoardDetailState extends State<BoardDetail> {
+class _MajorDetailState extends State<MajorDetail> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -116,7 +113,7 @@ class _BoardDetailState extends State<BoardDetail> {
                   ),
                   SizedBox(height: 4),
                   Text(
-                    '출간일 : ${widget.book['pub_date']}년',
+                    '출간일 : ${widget.book['pub_date']}',
                     style: TextStyle(fontSize: 16),
                   ),
                   SizedBox(height: 4),
@@ -134,6 +131,11 @@ class _BoardDetailState extends State<BoardDetail> {
                     '조회수 : ${widget.book['hits']}',
                     style: TextStyle(fontSize: 10),
                   ),
+                  // Divider(),
+                  // Text(
+                  //   '학과 : ${widget.book['category']}',
+                  //   style: TextStyle(fontSize: 10),
+                  // ),
                 ],
               ),
             ),
@@ -145,6 +147,7 @@ class _BoardDetailState extends State<BoardDetail> {
   }
 
   bool _isLiked = false;
+
   Widget _bottomBarWidget() {
     return Container(
       width: MediaQuery.of(context).size.width,
@@ -204,9 +207,7 @@ class _BoardDetailState extends State<BoardDetail> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 ElevatedButton(
-                  onPressed: () {
-                    Get.to(() => StudyPage());
-                  },
+                  onPressed: () {},
                   child: Text('스터디 참여'),
                 ),
                 SizedBox(width: 16),

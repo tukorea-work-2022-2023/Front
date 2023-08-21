@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
 
 import '../../constant/constant.dart';
+import '../IamPort/PayPage.dart';
 
 class MyPage extends StatelessWidget {
   @override
@@ -31,6 +32,12 @@ class MyPage extends StatelessWidget {
               Get.to(() => UserProfilePage());
             },
             child: Text('프로필 조회'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Get.to(() => PaymentScreen());
+            },
+            child: Text('결제'),
           )
         ],
       )),

@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:book/screens/Home/Home.dart';
+import 'package:book/screens/Major/Major.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:get/get.dart';
@@ -15,22 +15,24 @@ import 'package:http/http.dart' as http;
 
 import '../../ItBook.dart';
 
-class AdditionalInfo extends StatefulWidget {
+class MajorDetail extends StatefulWidget {
   final Map<String, dynamic> bookInfo;
 
-  AdditionalInfo({required this.bookInfo});
+  MajorDetail({required this.bookInfo});
 
   @override
-  _AdditionalInfoState createState() => _AdditionalInfoState();
+  _MajorDetailState createState() => _MajorDetailState();
 }
 
-class _AdditionalInfoState extends State<AdditionalInfo> {
+class _MajorDetailState extends State<MajorDetail> {
   String _selectedStatus = '최상';
   TextEditingController _descriptionController = TextEditingController();
   TextEditingController _tagInputController = TextEditingController();
 
   // PickedFile? _selectedImage;
   XFile? _selectedImage;
+
+  String selectedDepartment = '컴퓨터공학'; // 기본 선택 학과
 
   @override
   void dispose() {
@@ -45,6 +47,9 @@ class _AdditionalInfoState extends State<AdditionalInfo> {
     final dateFormat = DateFormat('EEE, d MMM yyyy HH:mm:ss Z');
     final pubDate = dateFormat.parse(widget.bookInfo['pubdate']);
     final pubYear = DateFormat('yyyy').format(pubDate);
+
+    // String selectedDepartment = '컴퓨터공학'; // 기본 선택 학과
+
     return Scaffold(
       appBar: AppBar(
         title: Text('책 정보 입력'),
@@ -128,6 +133,38 @@ class _AdditionalInfoState extends State<AdditionalInfo> {
                           _buildRadioButton('하'),
                           _buildRadioButton('최하'),
                         ],
+                      ),
+                      SizedBox(height: 16), // 간격 조절
+                      Text(
+                        '학과 선택',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: 8), // 간격 조절
+                      DropdownButton<String>(
+                        value: selectedDepartment,
+                        onChanged: (String? newValue) {
+                          // 파라미터 타입을 String?로 변경
+                          if (newValue != null) {
+                            // null 체크 추가
+                            setState(() {
+                              selectedDepartment = newValue;
+                            });
+                          }
+                        },
+                        items: <String>[
+                          '컴퓨터공학',
+                          '소프트웨어 공학',
+                          '게임공학',
+                          'IT경영',
+                        ].map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
                       ),
                     ],
                   ),
@@ -270,7 +307,7 @@ class _AdditionalInfoState extends State<AdditionalInfo> {
   }
 
   void _saveInfo() async {
-    String apiUrl = '${Global.baseUrl}/home/bookPost/';
+    String apiUrl = '${Global.baseUrl}/major/majorPost/';
 
     String title = widget.bookInfo['title'];
     String author = widget.bookInfo['author'];
@@ -293,6 +330,8 @@ class _AdditionalInfoState extends State<AdditionalInfo> {
 
     String token = "${AuthService.accessToken}";
 
+    String category = selectedDepartment;
+
     //new
     Map<String, String> headers = {
       "Authorization": "Bearer $token",
@@ -310,6 +349,7 @@ class _AdditionalInfoState extends State<AdditionalInfo> {
     request.fields['tags'] = json.encode([tag]);
     request.fields['state'] = status;
     request.fields['summary'] = summary;
+    request.fields['category'] = category;
     // Add image part if selected
     if (_selectedImage != null) {
       request.files.add(http.MultipartFile(
@@ -328,7 +368,8 @@ class _AdditionalInfoState extends State<AdditionalInfo> {
       if (response.statusCode == 201) {
         // Successfully posted the data
         print('Data posted successfully');
-        Get.offAll(() => ItBook());
+
+        Get.off(() => ItBook());
         // You can handle further actions here, such as showing a success message or navigating to another screen.
       } else {
         // Failed to post the data

@@ -58,7 +58,7 @@ void _sendRefreshToken() async {
   // Check the response
   if (response.statusCode == 200) {
     // Refresh token successful
-    Get.off(() => Login());
+    Get.offAll(() => Login());
     print('Refresh token successful! Response: ${response.body}');
   } else {
     // Refresh token failed
