@@ -369,7 +369,7 @@ class _MajorDetailState extends State<MajorDetail> {
         // Successfully posted the data
         print('Data posted successfully');
 
-        Get.off(() => ItBook());
+        Get.offAll(() => ItBook());
         // You can handle further actions here, such as showing a success message or navigating to another screen.
       } else {
         // Failed to post the data

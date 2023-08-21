@@ -16,8 +16,8 @@ class MajorPage extends StatefulWidget {
 }
 
 class _MajorPageState extends State<MajorPage> {
-  List<dynamic> books = []; // List to hold fetched books
-  String selectedCategory = '전체'; // Default selected category is 'All'
+  List<dynamic> books = [];
+  String selectedCategory = '전체';
 
   @override
   void initState() {
@@ -29,8 +29,8 @@ class _MajorPageState extends State<MajorPage> {
     final response = await http.get(
       Uri.parse('${Global.baseUrl}/major/majorPost/'),
       headers: {
-        'Authorization': 'Bearer ${AuthService.accessToken}'
-      }, // Add your bearer token
+        'Authorization': 'Bearer ${AuthService.accessToken}',
+      },
     );
 
     if (response.statusCode == 200) {
@@ -47,32 +47,40 @@ class _MajorPageState extends State<MajorPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(appName),
+        title: Text(
+          appName,
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         centerTitle: false,
         actions: [
-          IconButton(onPressed: () {}, icon: Icon(Icons.search)),
+          IconButton(
+            onPressed: () {},
+            icon: Icon(Icons.search),
+          ),
         ],
       ),
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          DropdownButton<String>(
-            value: selectedCategory,
-            onChanged: (String? newValue) {
-              // Change the parameter type to String?
-              if (newValue != null) {
-                // Check for null before using the value
-                setState(() {
-                  selectedCategory = newValue;
-                });
-              }
-            },
-            items: ['전체', '컴퓨터공학', '소프트웨어 공학', '게임공학', 'IT경영']
-                .map<DropdownMenuItem<String>>((String value) {
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Text(value),
-              );
-            }).toList(),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: DropdownButton<String>(
+              value: selectedCategory,
+              onChanged: (String? newValue) {
+                if (newValue != null) {
+                  setState(() {
+                    selectedCategory = newValue;
+                  });
+                }
+              },
+              items: ['전체', '컴퓨터공학', '소프트웨어 공학', '게임공학', 'IT경영']
+                  .map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+            ),
           ),
           Expanded(
             child: ListView.builder(
@@ -80,23 +88,58 @@ class _MajorPageState extends State<MajorPage> {
               itemBuilder: (context, index) {
                 if (selectedCategory == '전체' ||
                     books[index]['category'] == selectedCategory) {
-                  return ListTile(
-                    title: Text(books[index]['title']),
-                    subtitle: Text(books[index]['writer']),
-                    leading: Image.network(
-                      books[index]['state_image'],
-                      width: 70, // Adjust the width as needed
-                      height: 120, // Adjust the height as needed
-                      fit: BoxFit.cover,
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 4.0,
+                      horizontal: 16.0,
                     ),
-                    onTap: () {
-                      Get.to(() => MajorDetail(
-                          book: books[index])); // Pass the book details
-                    },
+                    child: GestureDetector(
+                      onTap: () {
+                        Get.to(() => MajorDetail(
+                              book: books[index],
+                            ));
+                      },
+                      child: Card(
+                        elevation: 3,
+                        child: Padding(
+                          padding: const EdgeInsets.all(0),
+                          child: Row(
+                            children: [
+                              Image.network(
+                                books[index]['state_image'],
+                                width: 70,
+                                height: 120,
+                                fit: BoxFit.cover,
+                              ),
+                              SizedBox(width: 15),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      books[index]['title'],
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    SizedBox(height: 4),
+                                    Text(
+                                      books[index]['writer'],
+                                      style: TextStyle(
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
                   );
                 }
-                return SizedBox
-                    .shrink(); // Hide items that don't match the selected category
+                return SizedBox.shrink();
               },
             ),
           ),

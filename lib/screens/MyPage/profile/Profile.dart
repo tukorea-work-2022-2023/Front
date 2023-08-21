@@ -43,7 +43,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
         actions: [
           TextButton(
             onPressed: () {
-              Get.to(() => ProfileUpdate());
+              Get.off(() => ProfileUpdate());
               // Handle the "수정" button press here
               // For example, you can navigate to the edit profile page
               // using Navigator.
