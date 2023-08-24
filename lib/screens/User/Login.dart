@@ -9,6 +9,7 @@ import 'package:http/http.dart' as http;
 
 import '../../global/global.dart';
 import '../../main.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:http/http.dart' as http;
 
 class Login extends StatefulWidget {
@@ -17,6 +18,7 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+  final _authentication = FirebaseAuth.instance;
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 

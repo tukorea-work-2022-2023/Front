@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:book/controller/user_controller.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
 import 'package:http/http.dart' as http;
@@ -15,6 +16,7 @@ class Register extends StatefulWidget {
 }
 
 class _RegisterState extends State<Register> {
+  final _authentication = FirebaseAuth.instance;
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
@@ -30,6 +32,8 @@ class _RegisterState extends State<Register> {
       'email': email,
       'password': password,
     };
+    final newUser = await _authentication.createUserWithEmailAndPassword(
+        email: email, password: password);
 
     // Convert the credentials map to a JSON string
     String jsonData = jsonEncode(credentials);
