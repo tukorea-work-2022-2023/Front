@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:book/screens/Home/Home.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:get/get.dart';
@@ -270,6 +272,13 @@ class _AdditionalInfoState extends State<AdditionalInfo> {
   }
 
   void _saveInfo() async {
+    //firebase -------
+    final _authentication = FirebaseAuth.instance;
+    final CollectionReference board =
+        FirebaseFirestore.instance.collection('board');
+    User? user = _authentication.currentUser;
+    //firebase -------
+
     String apiUrl = '${Global.baseUrl}/home/bookPost/';
 
     String title = widget.bookInfo['title'];
@@ -326,6 +335,14 @@ class _AdditionalInfoState extends State<AdditionalInfo> {
       final response = await request.send();
 
       if (response.statusCode == 201) {
+        //firebase -------
+        if (user != null) {
+          var uid = user.uid;
+          // board.doc(uid).set({'uid': uid, 'title': title});
+          board.add({'uid': uid, 'title': title});
+        }
+        //firebase end ------
+
         // Successfully posted the data
         print('Data posted successfully');
         Get.offAll(() => ItBook());

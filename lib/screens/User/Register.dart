@@ -17,11 +17,12 @@ class Register extends StatefulWidget {
 }
 
 class _RegisterState extends State<Register> {
-  //파이어스토어관련
+  //파이어스토어관련  -------
   final _authentication = FirebaseAuth.instance;
   final CollectionReference users =
       FirebaseFirestore.instance.collection('users');
-  //파이어 끝
+  //파이어 끝  -------
+
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
@@ -57,7 +58,7 @@ class _RegisterState extends State<Register> {
     if (response.statusCode == 200) {
       // Register successful
 
-      //파이어스토어
+      //firebase -------
       final newUser = await _authentication.createUserWithEmailAndPassword(
           email: email, password: password);
 
@@ -72,7 +73,7 @@ class _RegisterState extends State<Register> {
         });
       }
 
-      //파이어 끝
+      //firebase 끝 -------
 
       String decodedResponse = utf8.decode(response.bodyBytes);
       print('Register successful! Response: ${decodedResponse}');
