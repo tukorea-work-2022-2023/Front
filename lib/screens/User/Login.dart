@@ -8,7 +8,7 @@ import 'package:get/route_manager.dart';
 import 'package:http/http.dart' as http;
 
 import '../../global/global.dart';
-import '../../main.dart';
+
 // import 'package:http/http.dart' as http;
 
 class Login extends StatefulWidget {
