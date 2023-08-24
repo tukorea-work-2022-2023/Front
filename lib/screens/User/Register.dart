@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:book/controller/user_controller.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
@@ -16,7 +17,11 @@ class Register extends StatefulWidget {
 }
 
 class _RegisterState extends State<Register> {
+  //파이어스토어관련
   final _authentication = FirebaseAuth.instance;
+  final CollectionReference users =
+      FirebaseFirestore.instance.collection('users');
+  //파이어 끝
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
@@ -32,8 +37,6 @@ class _RegisterState extends State<Register> {
       'email': email,
       'password': password,
     };
-    final newUser = await _authentication.createUserWithEmailAndPassword(
-        email: email, password: password);
 
     // Convert the credentials map to a JSON string
     String jsonData = jsonEncode(credentials);
@@ -53,6 +56,24 @@ class _RegisterState extends State<Register> {
     // Check the response
     if (response.statusCode == 200) {
       // Register successful
+
+      //파이어스토어
+      final newUser = await _authentication.createUserWithEmailAndPassword(
+          email: email, password: password);
+
+      User? user = _authentication.currentUser;
+
+      if (user != null) {
+        print(user.uid);
+        // 사용자 UID로 Firestore에 데이터 저장
+        users.doc(user.uid).set({
+          'name': name,
+          'email': email,
+        });
+      }
+
+      //파이어 끝
+
       String decodedResponse = utf8.decode(response.bodyBytes);
       print('Register successful! Response: ${decodedResponse}');
       await AuthService.login(decodedResponse);

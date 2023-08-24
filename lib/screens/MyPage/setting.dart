@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
 
@@ -33,12 +34,14 @@ class Setting extends StatelessWidget {
 }
 
 void _sendRefreshToken() async {
+  final _authentication = FirebaseAuth.instance;
   final String refreshToken = '${AuthService.refreshToken}';
 
   // Create a map with the refresh token data
   Map<String, String> refreshTokenData = {
     'refresh': refreshToken,
   };
+  _authentication.signOut();
 
   // Convert the data map to a JSON string
   String jsonData = jsonEncode(refreshTokenData);

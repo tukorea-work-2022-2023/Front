@@ -31,6 +31,8 @@ class _LoginState extends State<Login> {
       'email': email,
       'password': password,
     };
+    final newUser = await _authentication.signInWithEmailAndPassword(
+        email: email, password: password);
 
     // Convert the credentials map to a JSON string
     String jsonData = jsonEncode(credentials);
