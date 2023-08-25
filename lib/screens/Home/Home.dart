@@ -98,7 +98,7 @@ class _HomePageState extends State<HomePage> {
               // print(uid);
 
               return ListTile(
-                title: Text(title),
+                title: Text(books[index]['title']),
                 subtitle: Text(
                     books[index]['writer']), // Replace with your field name
                 leading: Image.network(

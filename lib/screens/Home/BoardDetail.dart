@@ -136,7 +136,7 @@ class _BoardDetailState extends State<BoardDetail> {
                   ),
                   SizedBox(height: 8),
                   Text(
-                    '$Title',
+                    '$title',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
@@ -281,6 +281,7 @@ class _BoardDetailState extends State<BoardDetail> {
                       };
                       print(chatdata);
                       chatroom.add(chatdata);
+                      // home에서 보여질 때 뭔가 꼬이는게 있음 ( 같은게 있을때인가.. 저장할 때 date를 저장하면 date순으로 나와서 괜찮으려나)
                       //저 두 uid가 있는 채팅방은 채팅방으로 이동시켜야 함. 또 생성하면 안 됨
                     }
                   },
