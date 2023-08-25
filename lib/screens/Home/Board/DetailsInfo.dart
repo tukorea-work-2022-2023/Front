@@ -338,7 +338,6 @@ class _AdditionalInfoState extends State<AdditionalInfo> {
         //firebase -------
         if (user != null) {
           var uid = user.uid;
-          // board.doc(uid).set({'uid': uid, 'title': title});
           board.add({'uid': uid, 'title': title});
         }
         //firebase end ------

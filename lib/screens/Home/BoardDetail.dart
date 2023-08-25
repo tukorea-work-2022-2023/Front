@@ -1,20 +1,69 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../Study/StudyPage.dart';
 
 class BoardDetail extends StatefulWidget {
-  final dynamic book; // Book details passed from HomePage
+  // final dynamic book; // Book details passed from HomePage
 
-  BoardDetail({required this.book});
+  // BoardDetail({required this.book});
+
+  final Map<String, dynamic> bookData;
+
+  BoardDetail({required this.bookData});
 
   @override
   State<BoardDetail> createState() => _BoardDetailState();
 }
 
 class _BoardDetailState extends State<BoardDetail> {
+  late String title;
+  late String uid;
+  late String summary;
+  late String stateImage;
+  late String proImg;
+  late String proNick;
+  late String proNum;
+
+  late String writer;
+  late String publisher;
+  late String content;
+  late int sellPrice;
+  late String pubDate;
+  // late String tags;
+  late String createdAt;
+  late int hits;
+
+  @override
+  void initState() {
+    super.initState();
+    uid = widget.bookData['uid'];
+    var book = widget.bookData['book'];
+    var pro = widget.bookData['book']['profile'];
+
+    title = book['title'];
+    summary = book['summary'];
+    stateImage = book['state_image'];
+
+    writer = book['writer'];
+    publisher = book['publisher'];
+    content = book['content'];
+    sellPrice = book['sell_price'];
+    pubDate = book['pub_date'];
+    // tags = book['tags'];
+    createdAt = book['created_at'];
+    hits = book['hits'];
+
+    proImg = pro['image'];
+    proNick = pro['nickname'];
+    proNum = pro['studentnumber'];
+  }
+
   @override
   Widget build(BuildContext context) {
+    print('detail : ' + uid);
     return Scaffold(
       appBar: AppBar(
         title: Text('상세보기'),
@@ -28,7 +77,7 @@ class _BoardDetailState extends State<BoardDetail> {
               height: 300,
               decoration: BoxDecoration(
                 image: DecorationImage(
-                  image: NetworkImage(widget.book['state_image']),
+                  image: NetworkImage(stateImage),
                   fit: BoxFit.cover,
                 ),
               ),
@@ -41,13 +90,12 @@ class _BoardDetailState extends State<BoardDetail> {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      if (widget.book['profile']['image'] != null)
+                      if (proImg != null)
                         CircleAvatar(
-                          backgroundImage:
-                              NetworkImage(widget.book['profile']['image']),
+                          backgroundImage: NetworkImage(proImg),
                           radius: 24,
                         ),
-                      if (widget.book['profile']['image'] == null)
+                      if (proImg == null)
                         CircleAvatar(
                           // 여기에 기본 아이콘 이미지 넣기
                           radius: 24,
@@ -57,12 +105,12 @@ class _BoardDetailState extends State<BoardDetail> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            '${widget.book['profile']['nickname']}',
+                            '$proNick',
                             style: TextStyle(fontSize: 16),
                           ),
                           SizedBox(height: 4),
                           Text(
-                            '${widget.book['profile']['studentnumber']}학번',
+                            '$proNum학번',
                             style: TextStyle(fontSize: 16),
                           ),
                         ],
@@ -73,7 +121,7 @@ class _BoardDetailState extends State<BoardDetail> {
                   Divider(),
                   SizedBox(height: 15),
                   Text(
-                    widget.book['summary'],
+                    '$summary',
                     style: TextStyle(fontSize: 16),
                   ),
                   SizedBox(height: 15),
@@ -88,7 +136,7 @@ class _BoardDetailState extends State<BoardDetail> {
                   ),
                   SizedBox(height: 8),
                   Text(
-                    widget.book['title'],
+                    '$Title',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
@@ -96,42 +144,42 @@ class _BoardDetailState extends State<BoardDetail> {
                   ),
                   SizedBox(height: 8),
                   Text(
-                    '저자 : ${widget.book['writer']}',
+                    '저자 : $writer',
                     style: TextStyle(fontSize: 16),
                   ),
                   SizedBox(height: 4),
                   Text(
-                    '출판사 : ${widget.book['publisher']}',
+                    '출판사 : $publisher',
                     style: TextStyle(fontSize: 16),
                   ),
                   SizedBox(height: 4),
                   Text(
-                    '내용 : ${widget.book['content']}',
+                    '내용 : $content',
                     style: TextStyle(fontSize: 16),
                   ),
                   SizedBox(height: 4),
                   Text(
-                    '원가 : ${widget.book['sell_price']}원',
+                    '원가 : $sellPrice원',
                     style: TextStyle(fontSize: 16),
                   ),
                   SizedBox(height: 4),
                   Text(
-                    '출간일 : ${widget.book['pub_date']}년',
+                    '출간일 : $pubDate년',
                     style: TextStyle(fontSize: 16),
                   ),
                   SizedBox(height: 4),
-                  Text(
-                    '태그 : ${widget.book['tags']}',
-                    style: TextStyle(fontSize: 16),
-                  ),
+                  // Text(
+                  //   '태그 : $tags',
+                  //   style: TextStyle(fontSize: 16),
+                  // ),
                   Divider(),
                   Text(
-                    '등록일 : ${widget.book['created_at']}',
+                    '등록일 : $createdAt',
                     style: TextStyle(fontSize: 10),
                   ),
                   SizedBox(height: 7),
                   Text(
-                    '조회수 : ${widget.book['hits']}',
+                    '조회수 : $hits',
                     style: TextStyle(fontSize: 10),
                   ),
                 ],
@@ -146,6 +194,13 @@ class _BoardDetailState extends State<BoardDetail> {
 
   bool _isLiked = false;
   Widget _bottomBarWidget() {
+    //firebase -------
+    final _authentication = FirebaseAuth.instance;
+    User? user = _authentication.currentUser;
+    final CollectionReference chatroom =
+        FirebaseFirestore.instance.collection('chatroom');
+
+    //firebase -------
     return Container(
       width: MediaQuery.of(context).size.width,
       padding: const EdgeInsets.only(left: 20, right: 20, bottom: 40),
@@ -215,6 +270,19 @@ class _BoardDetailState extends State<BoardDetail> {
                     // Get.to(() => ChatScreen(
                     //       widget.board,
                     //     ));
+                    if (user != null) {
+                      var myuid = user.uid;
+                      print('로그인한사람 : ' + myuid);
+                      print('게시글 주인 : ' + uid);
+                      var chatdata = {
+                        'product': title,
+                        'date': DateTime.now(),
+                        'who': [myuid, uid]
+                      };
+                      print(chatdata);
+                      chatroom.add(chatdata);
+                      //저 두 uid가 있는 채팅방은 채팅방으로 이동시켜야 함. 또 생성하면 안 됨
+                    }
                   },
                   child: Text('채팅하기'),
                 ),
