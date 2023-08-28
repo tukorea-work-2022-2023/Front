@@ -6,7 +6,6 @@ class ChatRoom extends StatefulWidget {
   final String chatroomId;
 
   ChatRoom({required this.chatroomId});
-  // const ChatRoom({Key? key}) : super(key: key);
 
   @override
   State<ChatRoom> createState() => _ChatRoomState();
@@ -31,38 +30,74 @@ class _ChatRoomState extends State<ChatRoom> {
         'content': messageText,
         'date': FieldValue.serverTimestamp(),
         'uid': uid,
-        // 필요한 다른 필드들도 추가 가능
       });
 
-      _messageController.clear(); // 메시지 입력 필드 비우기
+      _messageController.clear();
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    // final _authentication = FirebaseAuth.instance;
-    // User? user = _authentication.currentUser;
-    // var uid = user?.uid;
-    // CollectionReference messages = FirebaseFirestore.instance
-    //     .collection('chatroom')
-    //     .doc(widget.chatroomId)
-    //     .collection('messages');
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.chatroomId),
+        title: Text(''),
       ),
       body: Column(
         children: [
-          // Expanded(
-          //   child: ListView.builder(
-          //     itemCount: _messages.length,
-          //     itemBuilder: (context, index) {
-          //       return ListTile(
-          //         title: Text(_messages[index]),
-          //       );
-          //     },
-          //   ),
-          // ),
+          Expanded(
+            child: StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('chatroom')
+                  .doc(widget.chatroomId)
+                  .collection('messages')
+                  .orderBy('date', descending: true)
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return CircularProgressIndicator();
+                }
+                if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                }
+                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                  return Text('');
+                }
+
+                return ListView.builder(
+                  reverse: true,
+                  itemCount: snapshot.data!.docs.length,
+                  itemBuilder: (context, index) {
+                    var message = snapshot.data!.docs[index];
+                    var content = message['content'];
+                    var uid = message['uid'];
+                    var isMyMessage =
+                        uid == FirebaseAuth.instance.currentUser?.uid;
+
+                    return Container(
+                      margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                      alignment: isMyMessage
+                          ? Alignment.centerRight
+                          : Alignment.centerLeft,
+                      child: Container(
+                        padding: EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color:
+                              isMyMessage ? Colors.blue : Colors.grey.shade300,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Text(
+                          content,
+                          style: TextStyle(
+                            color: isMyMessage ? Colors.white : Colors.black,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+          ),
           Divider(),
           Padding(
             padding: const EdgeInsets.all(10.0),
@@ -83,7 +118,7 @@ class _ChatRoomState extends State<ChatRoom> {
               ],
             ),
           ),
-          SizedBox(height: 30), // 일정한 간격을 두기 위한 공간 추가
+          SizedBox(height: 30),
         ],
       ),
     );

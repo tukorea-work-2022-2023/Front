@@ -338,7 +338,8 @@ class _AdditionalInfoState extends State<AdditionalInfo> {
         //firebase -------
         if (user != null) {
           var uid = user.uid;
-          board.add({'uid': uid, 'title': title});
+          var currentDate = DateTime.now(); // 현재 날짜와 시간
+          board.add({'createdAt': currentDate, 'uid': uid, 'title': title});
         }
         //firebase end ------
 

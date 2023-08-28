@@ -47,7 +47,7 @@ class _MajorChoiceState extends State<MajorChoice> {
       _scanBarcode = barcodeScanRes;
     });
     //새로 추가한 isbn넘기기
-    Get.to(MajorAladin(isbn: _scanBarcode));
+    Get.to(() => MajorAladin(isbn: _scanBarcode));
   }
 
   Widget _bookaddWidget() {

@@ -528,6 +528,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.2.1"
+  random_color:
+    dependency: "direct main"
+    description:
+      name: random_color
+      sha256: "2145533677148e8a255890707f9f6aa46681bf2ba5ef284599c2025257df0bf5"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.5"
   sky_engine:
     dependency: transitive
     description: flutter

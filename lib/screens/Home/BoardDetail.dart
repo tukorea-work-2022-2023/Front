@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../Chat/Chatroom.dart';
 import '../Study/StudyPage.dart';
 
 class BoardDetail extends StatefulWidget {
@@ -201,6 +202,8 @@ class _BoardDetailState extends State<BoardDetail> {
         FirebaseFirestore.instance.collection('chatroom');
 
     //firebase -------
+
+    bool isSameUser = user?.uid == uid; // Check if myuid and uid are the same
     return Container(
       width: MediaQuery.of(context).size.width,
       padding: const EdgeInsets.only(left: 20, right: 20, bottom: 40),
@@ -220,27 +223,6 @@ class _BoardDetailState extends State<BoardDetail> {
               setState(() {
                 _isLiked = !_isLiked;
               });
-              // UserController userController = UserController();
-              // String token = await userController.getToken();
-              // final response = await http.get(
-              //   Uri.parse(
-              //       'http://192.168.0.4:8000/home/like/${widget.board.id}/'),
-              //   headers: {'Authorization': 'token $token'},
-              // );
-              // String message = '';
-              // print(response.body);
-
-              // if (response.statusCode == 200 &&
-              //     response.body == {"status": "ok"}) {
-              //   message = '관심목록에 추가됐어요.';
-              // } else {
-              //   message = '관심목록에서 제거됐어요.';
-              // }
-              // final snackBar = SnackBar(
-              //   content: Text(message),
-              //   duration: const Duration(seconds: 1),
-              // );
-              // ScaffoldMessenger.of(context).showSnackBar(snackBar);
             },
             child: Icon(
               _isLiked ? Icons.favorite : Icons.favorite_border,
@@ -265,28 +247,56 @@ class _BoardDetailState extends State<BoardDetail> {
                   child: Text('스터디 참여'),
                 ),
                 SizedBox(width: 16),
-                ElevatedButton(
-                  onPressed: () {
-                    // Get.to(() => ChatScreen(
-                    //       widget.board,
-                    //     ));
-                    if (user != null) {
-                      var myuid = user.uid;
-                      print('로그인한사람 : ' + myuid);
-                      print('게시글 주인 : ' + uid);
-                      var chatdata = {
-                        'product': title,
-                        'date': DateTime.now(),
-                        'who': [myuid, uid]
-                      };
-                      print(chatdata);
-                      chatroom.add(chatdata);
-                      // home에서 보여질 때 뭔가 꼬이는게 있음 ( 같은게 있을때인가.. 저장할 때 date를 저장하면 date순으로 나와서 괜찮으려나)
-                      //저 두 uid가 있는 채팅방은 채팅방으로 이동시켜야 함. 또 생성하면 안 됨
-                    }
-                  },
-                  child: Text('채팅하기'),
-                ),
+                if (!isSameUser)
+                  ElevatedButton(
+                    onPressed: () async {
+                      if (user != null) {
+                        var myuid = user.uid;
+                        print('로그인한사람 : ' + myuid);
+                        print('게시글 주인 : ' + uid);
+
+                        // Create a consistent user list for searching chat rooms
+                        var userPair = [myuid, uid];
+                        userPair.sort(); // Sort the list
+
+                        // Check if a chat room between the users already exists
+                        final querySnapshot = await FirebaseFirestore.instance
+                            .collection('chatroom')
+                            .where('who', isEqualTo: userPair)
+                            .get();
+
+                        if (querySnapshot.docs.isNotEmpty) {
+                          // Existing chat room found
+                          var chatroomId = querySnapshot.docs.first.id;
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  ChatRoom(chatroomId: chatroomId),
+                            ),
+                          );
+                        } else {
+                          // Create a new chat room
+                          var chatdata = {
+                            'product': title,
+                            'date': DateTime.now(),
+                            'who': userPair,
+                          };
+                          print(chatdata);
+                          var newChatRef = await chatroom.add(chatdata);
+                          var newChatroomId = newChatRef.id;
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  ChatRoom(chatroomId: newChatroomId),
+                            ),
+                          );
+                        }
+                      }
+                    },
+                    child: Text('채팅하기'),
+                  ),
               ],
             ),
           )

@@ -43,11 +43,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
         actions: [
           TextButton(
             onPressed: () {
-              Get.off(() => ProfileUpdate());
-              // Handle the "수정" button press here
-              // For example, you can navigate to the edit profile page
-              // using Navigator.
-              // Navigator.push(context, MaterialPageRoute(builder: (context) => EditProfilePage()));
+              Get.off(() => ProfileUpdate(userData: userProfileData));
             },
             child: Text(
               '수정',
@@ -64,10 +60,55 @@ class _UserProfilePageState extends State<UserProfilePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text('Nickname: ${userProfileData["nickname"]}'),
-            Text('Student Number: ${userProfileData["studentnumber"]}'),
-            Text('Major: ${userProfileData["major"]}'),
-            // Image.network(userProfileData["image"]),
+            Container(
+              width: 120,
+              height: 120,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.grey[300],
+                image: userProfileData["image"] != null
+                    ? DecorationImage(
+                        image: NetworkImage(userProfileData["image"]),
+                        fit: BoxFit.cover,
+                      )
+                    : null,
+              ),
+              child: userProfileData["image"] == null
+                  ? Icon(
+                      Icons.person,
+                      size: 80,
+                      color: Colors.grey,
+                    )
+                  : null,
+            ),
+            SizedBox(height: 24),
+            Container(
+              padding: EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                children: [
+                  Text(
+                    'Nickname: ${userProfileData["nickname"]}',
+                    style: TextStyle(
+                      fontSize: 20,
+                    ),
+                  ),
+                  SizedBox(height: 12),
+                  Text(
+                    'Student Number: ${userProfileData["studentnumber"]}',
+                    style: TextStyle(fontSize: 18),
+                  ),
+                  SizedBox(height: 12),
+                  Text(
+                    'Major: ${userProfileData["major"]}',
+                    style: TextStyle(fontSize: 18),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),
