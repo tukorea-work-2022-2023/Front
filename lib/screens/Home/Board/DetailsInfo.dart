@@ -274,9 +274,10 @@ class _AdditionalInfoState extends State<AdditionalInfo> {
   void _saveInfo() async {
     //firebase -------
     final _authentication = FirebaseAuth.instance;
+    User? user = _authentication.currentUser;
     final CollectionReference board =
         FirebaseFirestore.instance.collection('board');
-    User? user = _authentication.currentUser;
+
     //firebase -------
 
     String apiUrl = '${Global.baseUrl}/home/bookPost/';

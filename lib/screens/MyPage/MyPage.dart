@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:book/screens/MyPage/posts/SavedPosts.dart';
 import 'package:book/screens/MyPage/profile/Profile.dart';
 import 'package:book/screens/MyPage/setting.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +11,8 @@ import '../../controller/user_controller.dart';
 import '../../global/global.dart';
 import '../IamPort/PayPage.dart';
 import 'package:http/http.dart' as http;
+
+import 'posts/MyPosts.dart';
 
 class MyPage extends StatefulWidget {
   @override
@@ -107,14 +110,21 @@ class _MyPageState extends State<MyPage> {
             leading: Icon(Icons.post_add),
             title: Text('My Posts'),
             onTap: () {
-              // Navigate to My Posts screen
+              Get.to(() => MyPosts());
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.school),
+            title: Text('My Major Posts'),
+            onTap: () {
+              // Navigate to Major Posts screen
             },
           ),
           ListTile(
             leading: Icon(Icons.bookmark),
             title: Text('Saved Posts'),
             onTap: () {
-              // Navigate to Saved Posts screen
+              Get.to(() => SavedPosts());
             },
           ),
           ListTile(

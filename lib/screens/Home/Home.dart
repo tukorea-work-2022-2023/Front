@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -46,6 +47,10 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final _authentication = FirebaseAuth.instance;
+    User? user = _authentication.currentUser;
+    var loginuid = user?.uid;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -58,7 +63,6 @@ class _HomePageState extends State<HomePage> {
         centerTitle: false,
         actions: [
           IconButton(onPressed: () {}, icon: Icon(Icons.search)),
-          IconButton(onPressed: () {}, icon: Icon(Icons.notifications_active)),
         ],
       ),
       body: StreamBuilder(
@@ -80,13 +84,18 @@ class _HomePageState extends State<HomePage> {
             itemBuilder: (context, index) {
               var document = snapshot.data?.docs[index];
               var title = document!['title'];
-              var uid = document!['uid'];
-              var createdAtTimestamp = document!['createdAt'];
+              var uid = document['uid'];
+
+              if (uid == loginuid) {
+                return Container();
+              }
+
+              var createdAtTimestamp = document['createdAt'];
               var createdAtDateTime = createdAtTimestamp.toDate();
 
               var dateFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
               var createdAtString = dateFormat.format(createdAtDateTime);
-
+              print(document.id);
               return Card(
                 elevation: 2,
                 margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -94,8 +103,9 @@ class _HomePageState extends State<HomePage> {
                   onTap: () {
                     Map<String, dynamic> bookData = {
                       'book': books[index],
-                      'title': document!['title'],
-                      'uid': document!['uid'],
+                      'title': document['title'],
+                      'uid': document['uid'],
+                      'documentId': document.id,
                     };
                     Get.to(() => BoardDetail(bookData: bookData));
                   },
