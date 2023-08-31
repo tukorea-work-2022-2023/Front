@@ -11,6 +11,7 @@ import 'package:http/http.dart' as http;
 import '../../controller/user_controller.dart';
 import '../../global/global.dart';
 import '../Chat/Chatroom.dart';
+import '../ItBook.dart';
 import '../Study/StudyPage.dart';
 
 class BoardDetail extends StatefulWidget {
@@ -23,6 +24,7 @@ class BoardDetail extends StatefulWidget {
 }
 
 class _BoardDetailState extends State<BoardDetail> {
+  String _selectedRentState = '대여 가능'; // 기본값 설정
   late String title;
   late String uid;
   late String documentId;
@@ -68,6 +70,92 @@ class _BoardDetailState extends State<BoardDetail> {
     proImg = pro['image'];
     proNick = pro['nickname'];
     proNum = pro['studentnumber'];
+  }
+
+  Future<void> _updateRentState() async {
+    final url = Uri.parse('${Global.baseUrl}/home/bookPost/$pk/');
+    final headers = {
+      'Authorization': 'Bearer ${AuthService.accessToken}',
+      'Content-Type': 'application/json',
+    };
+    final Map<String, String> body = {'rent_state': _selectedRentState};
+    print(_selectedRentState);
+
+    try {
+      final response = await http.patch(
+        url,
+        headers: headers,
+        body: jsonEncode(body),
+      );
+
+      if (response.statusCode == 200) {
+        // 수정이 성공적으로 완료되었을 때의 동작을 구현해주세요.
+        print('수정 성공');
+        Get.offAll(() => ItBook());
+      } else {
+        print('수정 실패');
+        String decodedResponse = utf8.decode(response.bodyBytes);
+        print(decodedResponse);
+        // 수정 실패 시의 동작을 구현해주세요.
+      }
+    } catch (e) {
+      print('수정 실패');
+      // 예외 처리를 구현해주세요.
+    }
+  }
+
+  Future<void> _showEditDialog(BuildContext context) async {
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('대여 상태 수정'),
+          content: StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  RadioListTile<String>(
+                    title: Text('대여 가능'),
+                    value: '대여 가능',
+                    groupValue: _selectedRentState,
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedRentState = value!;
+                      });
+                    },
+                  ),
+                  RadioListTile<String>(
+                    title: Text('대여중'),
+                    value: '대여중',
+                    groupValue: _selectedRentState,
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedRentState = value!;
+                      });
+                    },
+                  ),
+                ],
+              );
+            },
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // 취소 버튼
+              },
+              child: Text('취소'),
+            ),
+            TextButton(
+              onPressed: () {
+                _updateRentState(); // 수정 버튼
+              },
+              child: Text('수정'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<void> _showDeleteConfirmationDialog(BuildContext context) async {
@@ -117,7 +205,7 @@ class _BoardDetailState extends State<BoardDetail> {
           print('delete success');
 
           // Navigator.pop(context); // 상세 화면을 닫음
-          Get.offAll(() => HomePage());
+          Get.offAll(() => ItBook());
         } else {
           // 삭제 실패
           // 에러 처리를 수행하세요.
@@ -130,7 +218,6 @@ class _BoardDetailState extends State<BoardDetail> {
 
   @override
   Widget build(BuildContext context) {
-    print('detail : ' + uid);
     return Scaffold(
       appBar: AppBar(
         title: Text('상세보기'),
@@ -139,6 +226,7 @@ class _BoardDetailState extends State<BoardDetail> {
             onSelected: (value) {
               // 사용자가 선택한 메뉴에 따른 동작을 수행하는 코드를 여기에 추가하세요.
               if (value == '수정') {
+                _showEditDialog(context);
                 // 수정 동작 실행
               } else if (value == '삭제') {
                 _showDeleteConfirmationDialog(context);

@@ -1,49 +1,50 @@
 import 'dart:convert';
 
-import 'package:book/screens/Major/MajorBoard/MajorChoice.dart';
-import 'package:book/screens/Major/MajorSearch/MajorSearch.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart' as http; // Add this import
+import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
-import '../../constant/constant.dart';
-import '../../controller/user_controller.dart';
-import '../../global/global.dart';
-import 'MajorDetail.dart';
+import '../../../global/global.dart';
+import '../../Home/BoardDetail.dart';
 
-class MajorPage extends StatefulWidget {
+class MajorSearchResult extends StatefulWidget {
+  final String searchText;
+
+  const MajorSearchResult({required this.searchText, Key? key})
+      : super(key: key);
+
   @override
-  _MajorPageState createState() => _MajorPageState();
+  _MajorSearchResultState createState() => _MajorSearchResultState();
 }
 
-class _MajorPageState extends State<MajorPage> {
+class _MajorSearchResultState extends State<MajorSearchResult> {
   List<dynamic> books = [];
-  String selectedCategory = '전체';
+  String _searchResult = "";
 
   @override
   void initState() {
     super.initState();
-    fetchData();
+    _fetchSearchResults();
   }
 
-  Future<void> fetchData() async {
-    final response = await http.get(
-      Uri.parse('${Global.baseUrl}/major/majorPost/'),
-      headers: {
-        'Authorization': 'Bearer ${AuthService.accessToken}',
-      },
-    );
+  Future<void> _fetchSearchResults() async {
+    final response = await http.get(Uri.parse(
+        '${Global.baseUrl}/major/major_bookSearch/?search=${widget.searchText}'));
 
     if (response.statusCode == 200) {
+      // setState(() {
+      //   _searchResult = response.body;
+      // });
       String decodedResponse = utf8.decode(response.bodyBytes);
       setState(() {
         books = json.decode(decodedResponse);
       });
     } else {
-      throw Exception('Failed to fetch data');
+      // Handle error case
+      print('Failed to fetch data');
     }
   }
 
@@ -52,26 +53,13 @@ class _MajorPageState extends State<MajorPage> {
     final _authentication = FirebaseAuth.instance;
     User? user = _authentication.currentUser;
     var loginuid = user?.uid;
-
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          appName,
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        centerTitle: false,
-        actions: [
-          IconButton(
-            onPressed: () {
-              Get.to(() => MajorSearch());
-            },
-            icon: Icon(Icons.search),
-          ),
-        ],
+        title: Text('Search Result'),
       ),
       body: StreamBuilder(
         stream: FirebaseFirestore.instance
-            .collection('major')
+            .collection('board')
             .orderBy('createdAt')
             .snapshots(),
         builder: (context, snapshot) {
@@ -92,10 +80,6 @@ class _MajorPageState extends State<MajorPage> {
               print('도서등록된 아이디' + uid);
               print('로그인한 사람 아이디' + loginuid!);
 
-              if (uid == loginuid) {
-                return Container();
-              }
-
               var createdAtTimestamp = document['createdAt'];
               var createdAtDateTime = createdAtTimestamp.toDate();
 
@@ -113,7 +97,7 @@ class _MajorPageState extends State<MajorPage> {
                       'uid': document['uid'],
                       'documentId': document.id,
                     };
-                    Get.to(() => MajorDetail(bookData: bookData));
+                    Get.to(() => BoardDetail(bookData: bookData));
                   },
                   child: Padding(
                     padding: EdgeInsets.all(6),
@@ -158,12 +142,6 @@ class _MajorPageState extends State<MajorPage> {
             },
           );
         },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Get.to(() => MajorChoice());
-        },
-        child: Icon(Icons.add),
       ),
     );
   }

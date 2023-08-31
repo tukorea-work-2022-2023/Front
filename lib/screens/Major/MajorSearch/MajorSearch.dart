@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 
-import 'SearchResult.dart';
+import 'MajorSearchResult.dart';
 
-class Search extends StatefulWidget {
-  const Search({Key? key}) : super(key: key);
+class MajorSearch extends StatefulWidget {
+  const MajorSearch({Key? key}) : super(key: key);
 
   @override
-  State<Search> createState() => _SearchState();
+  State<MajorSearch> createState() => _MajorSearchState();
 }
 
-class _SearchState extends State<Search> {
+class _MajorSearchState extends State<MajorSearch> {
   TextEditingController _searchController = TextEditingController();
 
   void _printEnteredText() {
@@ -18,7 +18,7 @@ class _SearchState extends State<Search> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => SearchResult(searchText: searchText),
+        builder: (context) => MajorSearchResult(searchText: searchText),
       ),
     );
   }

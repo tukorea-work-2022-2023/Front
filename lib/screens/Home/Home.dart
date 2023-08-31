@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:book/screens/Home/Search/Search.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -62,7 +63,11 @@ class _HomePageState extends State<HomePage> {
         ),
         centerTitle: false,
         actions: [
-          IconButton(onPressed: () {}, icon: Icon(Icons.search)),
+          IconButton(
+              onPressed: () {
+                Get.to(() => Search());
+              },
+              icon: Icon(Icons.search)),
         ],
       ),
       body: StreamBuilder(
@@ -85,6 +90,8 @@ class _HomePageState extends State<HomePage> {
               var document = snapshot.data?.docs[index];
               var title = document!['title'];
               var uid = document['uid'];
+              print('도서등록된 아이디' + uid);
+              print('로그인한 사람 아이디' + loginuid!);
 
               if (uid == loginuid) {
                 return Container();

@@ -73,6 +73,9 @@ class _MyPostsState extends State<MyPosts> {
 
               var dateFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
               var createdAtString = dateFormat.format(createdAtDateTime);
+
+              bool isRenting = books[index]['rent_state'] == '대여중';
+
               print(document.id);
               return Card(
                 elevation: 2,
@@ -87,43 +90,63 @@ class _MyPostsState extends State<MyPosts> {
                     };
                     Get.to(() => BoardDetail(bookData: bookData));
                   },
-                  child: Padding(
-                    padding: EdgeInsets.all(6),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Image.network(
-                          '${Global.baseUrl}${books[index]['state_image']}',
-                          width: 60,
-                          height: 110,
-                          fit: BoxFit.cover,
+                  child: Stack(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.all(6),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Image.network(
+                              '${books[index]['state_image']}',
+                              width: 60,
+                              height: 110,
+                              fit: BoxFit.cover,
+                            ),
+                            SizedBox(width: 15),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SizedBox(height: 18),
+                                  Text(
+                                    books[index]['title'],
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  SizedBox(height: 18),
+                                  Text(
+                                    books[index]['writer'],
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Color.fromARGB(255, 118, 118, 118),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
-                        SizedBox(width: 15),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SizedBox(height: 18),
-                              Text(
-                                books[index]['title'],
+                      ),
+                      if (isRenting)
+                        Positioned.fill(
+                          child: Container(
+                            color: Colors.black54,
+                            child: Center(
+                              child: Text(
+                                '대여중',
                                 style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              SizedBox(height: 18),
-                              Text(
-                                books[index]['writer'],
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Color.fromARGB(255, 118, 118, 118),
-                                ),
-                              ),
-                            ],
+                            ),
                           ),
                         ),
-                      ],
-                    ),
+                    ],
                   ),
                 ),
               );

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:book/screens/MyPage/posts/MyMajorPosts.dart';
 import 'package:book/screens/MyPage/posts/SavedPosts.dart';
 import 'package:book/screens/MyPage/profile/Profile.dart';
 import 'package:book/screens/MyPage/setting.dart';
@@ -117,7 +118,7 @@ class _MyPageState extends State<MyPage> {
             leading: Icon(Icons.school),
             title: Text('My Major Posts'),
             onTap: () {
-              // Navigate to Major Posts screen
+              Get.to(() => MyMajorPosts());
             },
           ),
           ListTile(

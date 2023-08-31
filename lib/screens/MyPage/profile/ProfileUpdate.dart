@@ -121,23 +121,19 @@ class _ProfileUpdateState extends State<ProfileUpdate> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            GestureDetector(
-              onTap: _pickImage,
-              child: ClipOval(
-                child: _selectedImage != null
-                    ? Image.file(
-                        File(_selectedImage!.path),
-                        width: 100,
-                        height: 100,
-                        fit: BoxFit.cover,
-                      )
-                    : Image.network(
-                        widget.userData["image"],
-                        width: 100,
-                        height: 100,
-                        fit: BoxFit.cover,
-                      ),
-              ),
+            ClipOval(
+              child: _selectedImage != null
+                  ? Image.file(
+                      File(_selectedImage!.path),
+                      width: 120,
+                      height: 120,
+                      fit: BoxFit.cover,
+                    )
+                  : Icon(
+                      Icons.person,
+                      size: 120,
+                      color: Colors.grey,
+                    ),
             ),
             SizedBox(height: 10),
             TextButton(

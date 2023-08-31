@@ -8,6 +8,7 @@ import 'package:get/route_manager.dart';
 import 'package:http/http.dart' as http;
 
 import '../../global/global.dart';
+import 'EmailCheck.dart';
 import 'Login.dart';
 // import 'package:http/http.dart' as http;
 
@@ -78,13 +79,12 @@ class _RegisterState extends State<Register> {
       String decodedResponse = utf8.decode(response.bodyBytes);
       print('Register successful! Response: ${decodedResponse}');
       await AuthService.login(decodedResponse);
-      Get.offAll(() => Login());
+      Get.offAll(() => EmailCheck());
       // You can add navigation logic here to redirect to another page after successful login
     } else {
       // Login failed
       String decodedResponse = utf8.decode(response.bodyBytes);
       print('Register failed. Error: $decodedResponse');
-      print('Register failed. Error: ${response.reasonPhrase}');
     }
   }
 

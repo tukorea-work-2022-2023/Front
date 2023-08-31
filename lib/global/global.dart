@@ -1,3 +1,3 @@
 class Global {
-  static const String baseUrl = "http://192.168.0.4:8000";
+  static const String baseUrl = "http://localhost:8000";
 }

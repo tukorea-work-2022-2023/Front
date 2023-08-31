@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:book/screens/Major/MajorBoard/MajorChoice.dart';
-import 'package:book/screens/Major/MajorSearch/MajorSearch.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -9,17 +8,17 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http; // Add this import
 import 'package:intl/intl.dart';
 
-import '../../constant/constant.dart';
-import '../../controller/user_controller.dart';
-import '../../global/global.dart';
-import 'MajorDetail.dart';
+import '../../../constant/constant.dart';
+import '../../../controller/user_controller.dart';
+import '../../../global/global.dart';
+import '../../Major/MajorDetail.dart';
 
-class MajorPage extends StatefulWidget {
+class MyMajorPosts extends StatefulWidget {
   @override
-  _MajorPageState createState() => _MajorPageState();
+  _MyMajorPostsState createState() => _MyMajorPostsState();
 }
 
-class _MajorPageState extends State<MajorPage> {
+class _MyMajorPostsState extends State<MyMajorPosts> {
   List<dynamic> books = [];
   String selectedCategory = '전체';
 
@@ -60,14 +59,6 @@ class _MajorPageState extends State<MajorPage> {
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         centerTitle: false,
-        actions: [
-          IconButton(
-            onPressed: () {
-              Get.to(() => MajorSearch());
-            },
-            icon: Icon(Icons.search),
-          ),
-        ],
       ),
       body: StreamBuilder(
         stream: FirebaseFirestore.instance
@@ -89,10 +80,8 @@ class _MajorPageState extends State<MajorPage> {
               var document = snapshot.data?.docs[index];
               var title = document!['title'];
               var uid = document['uid'];
-              print('도서등록된 아이디' + uid);
-              print('로그인한 사람 아이디' + loginuid!);
 
-              if (uid == loginuid) {
+              if (uid != loginuid) {
                 return Container();
               }
 
@@ -101,6 +90,9 @@ class _MajorPageState extends State<MajorPage> {
 
               var dateFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
               var createdAtString = dateFormat.format(createdAtDateTime);
+
+              bool isRenting = books[index]['rent_state'] == '대여중';
+
               print(document.id);
               return Card(
                 elevation: 2,
@@ -115,43 +107,63 @@ class _MajorPageState extends State<MajorPage> {
                     };
                     Get.to(() => MajorDetail(bookData: bookData));
                   },
-                  child: Padding(
-                    padding: EdgeInsets.all(6),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Image.network(
-                          books[index]['state_image'],
-                          width: 60,
-                          height: 110,
-                          fit: BoxFit.cover,
+                  child: Stack(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.all(6),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Image.network(
+                              '${books[index]['state_image']}',
+                              width: 60,
+                              height: 110,
+                              fit: BoxFit.cover,
+                            ),
+                            SizedBox(width: 15),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SizedBox(height: 18),
+                                  Text(
+                                    books[index]['title'],
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  SizedBox(height: 18),
+                                  Text(
+                                    books[index]['writer'],
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Color.fromARGB(255, 118, 118, 118),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
-                        SizedBox(width: 15),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SizedBox(height: 18),
-                              Text(
-                                books[index]['title'],
+                      ),
+                      if (isRenting)
+                        Positioned.fill(
+                          child: Container(
+                            color: Colors.black54,
+                            child: Center(
+                              child: Text(
+                                '대여중',
                                 style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              SizedBox(height: 18),
-                              Text(
-                                books[index]['writer'],
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Color.fromARGB(255, 118, 118, 118),
-                                ),
-                              ),
-                            ],
+                            ),
                           ),
                         ),
-                      ],
-                    ),
+                    ],
                   ),
                 ),
               );
