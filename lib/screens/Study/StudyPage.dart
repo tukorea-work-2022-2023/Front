@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import '../../controller/user_controller.dart';
 import '../../global/global.dart';
 import 'AddStudy.dart';
+import 'StudyDetail.dart';
 
 class StudyPage extends StatefulWidget {
   @override
@@ -14,6 +15,8 @@ class StudyPage extends StatefulWidget {
 }
 
 class _StudyPageState extends State<StudyPage> {
+  final pk = Get.arguments;
+
   List<dynamic> studyPosts = []; // Store the fetched study posts here
   void initState() {
     super.initState();
@@ -21,7 +24,7 @@ class _StudyPageState extends State<StudyPage> {
   }
 
   Future<void> _fetchStudyPosts() async {
-    final String baseUrl = '${Global.baseUrl}/home/study/';
+    final String baseUrl = '${Global.baseUrl}/home/study/list/$pk/';
 
     try {
       final response = await http.get(
@@ -49,31 +52,46 @@ class _StudyPageState extends State<StudyPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('스터디 페이지'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () async {
+              final result =
+                  await Get.to(() => AddStudyPostPage(), arguments: pk);
+              if (result == true) {
+                // AddStudyPostPage에서 true를 반환하면 데이터를 다시 불러옴
+                await _fetchStudyPosts();
+              }
+            },
+          ),
+        ],
       ),
       body: Column(
         children: [
-          ElevatedButton(
-            onPressed: () {
-              Get.to(() => AddStudyPostPage());
-            },
-            child: Text('스터디 모집 게시물 추가'),
-          ),
           Expanded(
-            child: ListView.builder(
-              itemCount: studyPosts.length,
-              itemBuilder: (context, index) {
-                final post = studyPosts[index];
-                final studyContent = post['study_content'];
-                final recruitState = post['recruit_state'];
+              child: ListView.builder(
+            itemCount: studyPosts.length,
+            itemBuilder: (context, index) {
+              final post = studyPosts[index];
 
-                return ListTile(
-                  title: Text(studyContent),
-                  subtitle: Text(recruitState),
+              return InkWell(
+                onTap: () async {
+                  final result = await Get.to(() => StudyDetailPage(
+                        studyPost: post,
+                      ));
+                  if (result == true) {
+                    // AddStudyPostPage에서 true를 반환하면 데이터를 다시 불러옴
+                    await _fetchStudyPosts();
+                  }
+                },
+                child: ListTile(
+                  title: Text(post['study_content']),
+                  subtitle: Text(post['recruit_state']),
                   // You can customize the ListTile further if needed
-                );
-              },
-            ),
-          ),
+                ),
+              );
+            },
+          )),
         ],
       ),
     );

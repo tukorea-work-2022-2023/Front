@@ -41,6 +41,7 @@ class _MajorDetailState extends State<MajorDetail> {
   late String content;
   late int sellPrice;
   late String pubDate;
+  late String category;
   // late String tags;
   late String createdAt;
   late int hits;
@@ -58,6 +59,7 @@ class _MajorDetailState extends State<MajorDetail> {
     title = book['title'];
     summary = book['summary'];
     stateImage = book['state_image'];
+    category = book['category'];
 
     writer = book['writer'];
     publisher = book['publisher'];
@@ -466,8 +468,7 @@ class _MajorDetailState extends State<MajorDetail> {
                   onPressed: () async {
                     if (user != null) {
                       var myuid = user.uid;
-                      print('로그인한사람 : ' + myuid);
-                      print('게시글 주인 : ' + uid);
+
                       if (myuid == uid) {
                         // Show a dialog if the user is trying to chat with themselves
                         showDialog(

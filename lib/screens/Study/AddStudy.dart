@@ -12,7 +12,8 @@ class AddStudyPostPage extends StatefulWidget {
 }
 
 class _AddStudyPostPageState extends State<AddStudyPostPage> {
-  TextEditingController bookPostController = TextEditingController();
+  final pk = Get.arguments;
+
   TextEditingController headcountController = TextEditingController();
   TextEditingController studyContentController = TextEditingController();
   TextEditingController studyPeriodController = TextEditingController();
@@ -26,7 +27,7 @@ class _AddStudyPostPageState extends State<AddStudyPostPage> {
     };
 
     final body = jsonEncode({
-      "book_post": int.parse(bookPostController.text),
+      "book_post": pk,
       "headcount": int.parse(headcountController.text),
       "study_content": studyContentController.text,
       "study_period": int.parse(studyPeriodController.text),
@@ -38,7 +39,7 @@ class _AddStudyPostPageState extends State<AddStudyPostPage> {
     if (response.statusCode == 201) {
       // Successful post
       print('Study post added successfully');
-      Get.back(); // Go back to the previous page
+      Get.back(result: true); // Go back to the previous page
     } else {
       // Failed to post
       print('Failed to add study post. Status code: ${response.statusCode}');
@@ -57,23 +58,18 @@ class _AddStudyPostPageState extends State<AddStudyPostPage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             TextFormField(
-              controller: bookPostController,
-              decoration: InputDecoration(labelText: 'Book Post ID'),
-              keyboardType: TextInputType.number,
-            ),
-            TextFormField(
               controller: headcountController,
-              decoration: InputDecoration(labelText: 'Headcount'),
+              decoration: InputDecoration(labelText: '인원 수'),
               keyboardType: TextInputType.number,
             ),
             TextFormField(
               controller: studyContentController,
-              decoration: InputDecoration(labelText: 'Study Content'),
+              decoration: InputDecoration(labelText: '내용'),
               maxLines: null,
             ),
             TextFormField(
               controller: studyPeriodController,
-              decoration: InputDecoration(labelText: 'Study Period'),
+              decoration: InputDecoration(labelText: '스터디 기간(주)'),
               keyboardType: TextInputType.number,
             ),
             SizedBox(height: 16.0),

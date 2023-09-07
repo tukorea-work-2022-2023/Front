@@ -76,7 +76,7 @@ class _ProfileUpdateState extends State<ProfileUpdate> {
 
       if (response.statusCode == 200) {
         // 성공적으로 업데이트된 경우의 처리
-        print("프로필 업데이트 성공");
+
         Get.off(() => UserProfilePage());
       } else {
         // 실패한 경우의 처리

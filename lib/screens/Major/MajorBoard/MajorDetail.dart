@@ -44,7 +44,6 @@ class _MajorDetailState extends State<MajorDetail> {
 
   @override
   Widget build(BuildContext context) {
-    // print(_selectedImage!.path);
     final extractedHtml = widget.bookInfo['description'].split('<br/>')[1];
     final dateFormat = DateFormat('EEE, d MMM yyyy HH:mm:ss Z');
     final pubDate = dateFormat.parse(widget.bookInfo['pubdate']);

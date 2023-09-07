@@ -13,7 +13,6 @@ class _SearchState extends State<Search> {
   TextEditingController _searchController = TextEditingController();
 
   void _printEnteredText() {
-    print("Entered text: ${_searchController.text}");
     String searchText = _searchController.text;
     Navigator.push(
       context,

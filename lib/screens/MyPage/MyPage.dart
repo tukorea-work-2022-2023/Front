@@ -14,6 +14,7 @@ import '../IamPort/PayPage.dart';
 import 'package:http/http.dart' as http;
 
 import 'posts/MyPosts.dart';
+import 'posts/MyRentedBooks.dart';
 
 class MyPage extends StatefulWidget {
   @override
@@ -132,7 +133,7 @@ class _MyPageState extends State<MyPage> {
             leading: Icon(Icons.receipt),
             title: Text('내가 대여한 도서'),
             onTap: () {
-              // Navigate to Rented Posts screen
+              Get.to(() => MyRentedBooksPage());
             },
           ),
         ],

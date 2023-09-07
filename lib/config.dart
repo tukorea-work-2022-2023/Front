@@ -1,3 +1,3 @@
 // config.dart
-const String userCode = 'test2';
-const String ip = 'test2';
+const String userCode = '';
+const String ip = '';

@@ -80,7 +80,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
                             cardQuota: [2, 3],
                           ),
                           callback: (Map<String, String> result) {
-                            print(result);
                             Get.to(() => ItBook());
                           },
                         ),

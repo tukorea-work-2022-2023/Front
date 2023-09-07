@@ -90,8 +90,6 @@ class _HomePageState extends State<HomePage> {
               var document = snapshot.data?.docs[index];
               var title = document!['title'];
               var uid = document['uid'];
-              print('도서등록된 아이디' + uid);
-              print('로그인한 사람 아이디' + loginuid!);
 
               if (uid == loginuid) {
                 return Container();
@@ -102,7 +100,7 @@ class _HomePageState extends State<HomePage> {
 
               var dateFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
               var createdAtString = dateFormat.format(createdAtDateTime);
-              print(document.id);
+
               return Card(
                 elevation: 2,
                 margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),

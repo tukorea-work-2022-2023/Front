@@ -49,7 +49,7 @@ class _BoardDetailState extends State<BoardDetail> {
     super.initState();
     uid = widget.bookData['uid'];
     documentId = widget.bookData['documentId'];
-    print(documentId);
+
     var book = widget.bookData['book'];
     var pro = widget.bookData['book']['profile'];
 
@@ -79,7 +79,6 @@ class _BoardDetailState extends State<BoardDetail> {
       'Content-Type': 'application/json',
     };
     final Map<String, String> body = {'rent_state': _selectedRentState};
-    print(_selectedRentState);
 
     try {
       final response = await http.patch(
@@ -104,6 +103,7 @@ class _BoardDetailState extends State<BoardDetail> {
     }
   }
 
+  //수정 창
   Future<void> _showEditDialog(BuildContext context) async {
     await showDialog(
       context: context,
@@ -158,6 +158,7 @@ class _BoardDetailState extends State<BoardDetail> {
     );
   }
 
+  //삭제 창
   Future<void> _showDeleteConfirmationDialog(BuildContext context) async {
     // 삭제 확인 알림창을 표시하는 함수
     bool deleteConfirmed = await showDialog(
@@ -216,8 +217,116 @@ class _BoardDetailState extends State<BoardDetail> {
     }
   }
 
+  //대여창
+  Future<void> _showRentDialog(BuildContext context) async {
+    String selectedRentalDays = '7'; // Default value
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('대여 기간 선택'),
+          content: StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  RadioListTile<String>(
+                    title: Text('7일'),
+                    value: '7',
+                    groupValue: selectedRentalDays,
+                    onChanged: (value) {
+                      setState(() {
+                        selectedRentalDays = value!;
+                      });
+                    },
+                  ),
+                  RadioListTile<String>(
+                    title: Text('15일'),
+                    value: '15',
+                    groupValue: selectedRentalDays,
+                    onChanged: (value) {
+                      setState(() {
+                        selectedRentalDays = value!;
+                      });
+                    },
+                  ),
+                  RadioListTile<String>(
+                    title: Text('30일'),
+                    value: '30',
+                    groupValue: selectedRentalDays,
+                    onChanged: (value) {
+                      setState(() {
+                        selectedRentalDays = value!;
+                      });
+                    },
+                  ),
+                ],
+              );
+            },
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // 취소 버튼
+              },
+              child: Text('취소'),
+            ),
+            TextButton(
+              onPressed: () {
+                _performRental(selectedRentalDays); // 대여 버튼
+              },
+              child: Text('대여'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _performRental(String rentalDays) async {
+    // rentalDays를 int로 변환
+    int? rentalDaysInt = int.tryParse(rentalDays);
+
+    if (rentalDaysInt == null) {
+      // rentalDays를 정수로 변환할 수 없는 경우 에러 처리
+      print('Invalid rental days: $rentalDays');
+      return;
+    }
+
+    final url = Uri.parse('${Global.baseUrl}/home/create_rental/$pk/rent/');
+    final headers = {
+      'Authorization': 'Bearer ${AuthService.accessToken}',
+      'Content-Type': 'application/json',
+    };
+    final Map<String, dynamic> body = {'rental_days': rentalDaysInt};
+
+    try {
+      final response = await http.post(
+        url,
+        headers: headers,
+        body: jsonEncode(body),
+      );
+
+      if (response.statusCode == 200) {
+        // 대여 성공 시의 동작을 구현해주세요.
+        print('대여 성공');
+        Navigator.pop(context); // Close the dialog
+        Get.offAll(() => ItBook());
+      } else {
+        print('대여 실패');
+
+        // 대여 실패 시의 동작
+      }
+    } catch (e) {
+      // 네트워크 에러 또는 기타 예외 처리
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final _authentication = FirebaseAuth.instance;
+    User? user = _authentication.currentUser;
+    var myuid = user?.uid;
     return Scaffold(
       appBar: AppBar(
         title: Text('상세보기'),
@@ -230,19 +339,47 @@ class _BoardDetailState extends State<BoardDetail> {
                 // 수정 동작 실행
               } else if (value == '삭제') {
                 _showDeleteConfirmationDialog(context);
+              } else if (value == '대여') {
+                _showRentDialog(context);
+                // 대여 동작 실행
               }
             },
-            itemBuilder: (BuildContext context) => [
-              PopupMenuItem<String>(
-                value: '수정',
-                child: Text('수정'),
-              ),
-              PopupMenuItem<String>(
-                value: '삭제',
-                child: Text('삭제'),
-              ),
-            ],
-          ),
+            itemBuilder: (BuildContext context) {
+              List<PopupMenuEntry<String>> menuItems = [];
+
+              // Check if the current user is the same as the author of the post
+
+              bool isSameUser = myuid == uid;
+
+              // Add the '수정' and '삭제' menu items for the author and other users
+              if (isSameUser) {
+                menuItems.add(
+                  PopupMenuItem<String>(
+                    value: '수정',
+                    child: Text('수정'),
+                  ),
+                );
+                menuItems.add(
+                  PopupMenuItem<String>(
+                    value: '삭제',
+                    child: Text('삭제'),
+                  ),
+                );
+              }
+
+              // Add the '대여' menu item only for other users
+              if (!isSameUser) {
+                menuItems.add(
+                  PopupMenuItem<String>(
+                    value: '대여',
+                    child: Text('대여'),
+                  ),
+                );
+              }
+
+              return menuItems;
+            },
+          )
         ],
       ),
       body: SingleChildScrollView(
@@ -454,7 +591,7 @@ class _BoardDetailState extends State<BoardDetail> {
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    Get.to(() => StudyPage());
+                    Get.to(() => StudyPage(), arguments: pk);
                   },
                   child: Text('스터디 참여'),
                 ),
@@ -464,8 +601,7 @@ class _BoardDetailState extends State<BoardDetail> {
                   onPressed: () async {
                     if (user != null) {
                       var myuid = user.uid;
-                      print('로그인한사람 : ' + myuid);
-                      print('게시글 주인 : ' + uid);
+
                       if (myuid == uid) {
                         // Show a dialog if the user is trying to chat with themselves
                         showDialog(
@@ -513,7 +649,7 @@ class _BoardDetailState extends State<BoardDetail> {
                             'date': DateTime.now(),
                             'who': userPair,
                           };
-                          print(chatdata);
+
                           var newChatRef = await chatroom.add(chatdata);
                           var newChatroomId = newChatRef.id;
                           Navigator.push(

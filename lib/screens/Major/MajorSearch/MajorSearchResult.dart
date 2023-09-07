@@ -77,8 +77,6 @@ class _MajorSearchResultState extends State<MajorSearchResult> {
               var document = snapshot.data?.docs[index];
               var title = document!['title'];
               var uid = document['uid'];
-              print('도서등록된 아이디' + uid);
-              print('로그인한 사람 아이디' + loginuid!);
 
               var createdAtTimestamp = document['createdAt'];
               var createdAtDateTime = createdAtTimestamp.toDate();

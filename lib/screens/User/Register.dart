@@ -66,7 +66,6 @@ class _RegisterState extends State<Register> {
       User? user = _authentication.currentUser;
 
       if (user != null) {
-        print(user.uid);
         // 사용자 UID로 Firestore에 데이터 저장
         users.doc(user.uid).set({
           'name': name,

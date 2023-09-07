@@ -28,6 +28,7 @@ dependencies:
   firebase_core: ^2.15.1
   firebase_auth: ^4.8.0
   random_color: ^1.0.5
+  url_launcher: ^6.1.11
 
 dev_dependencies:
   flutter_test:
