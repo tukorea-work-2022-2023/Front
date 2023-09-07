@@ -43,4 +43,4 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-/book/lib/config1.dart
+/lib/config2.dart
