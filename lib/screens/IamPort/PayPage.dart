@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iamport_flutter/iamport_payment.dart';
 import 'package:iamport_flutter/model/payment_data.dart';
-import '../../config.dart';
+
+import '../../config2.dart';
 import '../ItBook.dart';
 
 class PaymentScreen extends StatefulWidget {
