@@ -29,6 +29,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
         final decodedBody =
             utf8.decode(response.bodyBytes); // Decode the response body
         userProfileData = json.decode(decodedBody);
+        print(userProfileData);
       });
     } else {
       // Handle error if needed

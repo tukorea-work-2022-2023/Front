@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:book/screens/MyPage/posts/MyMajorPosts.dart';
+import 'package:book/screens/MyPage/posts/Recommend.dart';
 import 'package:book/screens/MyPage/posts/SavedPosts.dart';
 import 'package:book/screens/MyPage/profile/Profile.dart';
 import 'package:book/screens/MyPage/setting.dart';
@@ -134,6 +135,13 @@ class _MyPageState extends State<MyPage> {
             title: Text('내가 대여한 도서'),
             onTap: () {
               Get.to(() => MyRentedBooksPage());
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.recommend),
+            title: Text('추천 도서'),
+            onTap: () {
+              Get.to(() => Recommend());
             },
           ),
         ],
